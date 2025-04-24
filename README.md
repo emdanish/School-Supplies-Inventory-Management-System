@@ -7,7 +7,6 @@ A comprehensive Java-based desktop application for managing school supplies inve
 - [Login Credentials](#login-credentials)
 - [Running on Mac OS](#running-on-mac-os)
 - [Running on Windows](#running-on-windows)
-- [Screenshots](#screenshots)
 - [Troubleshooting](#troubleshooting)
 
 ## Features
