@@ -15,7 +15,7 @@ public class TransactionDAO {
     
     // Create a new transaction
     public boolean addTransaction(Transaction transaction) {
-        String query = "INSERT INTO transactions (item_id, type, quantity) VALUES (?, ?, ?)";
+        String query = "INSERT INTO transactions (item_id, transaction_type, quantity) VALUES (?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +73,7 @@ public class TransactionDAO {
         List<Transaction> transactions = new ArrayList<>();
         String query = "SELECT t.*, i.item_name FROM transactions t " +
                       "JOIN items i ON t.item_id = i.item_id " +
-                      "ORDER BY t.date DESC";
+                      "ORDER BY t.transaction_date DESC";
         
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
@@ -96,7 +96,7 @@ public class TransactionDAO {
         String query = "SELECT t.*, i.item_name FROM transactions t " +
                       "JOIN items i ON t.item_id = i.item_id " +
                       "WHERE t.item_id = ? " +
-                      "ORDER BY t.date DESC";
+                      "ORDER BY t.transaction_date DESC";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -121,9 +121,9 @@ public class TransactionDAO {
         transaction.setTransactionId(rs.getInt("transaction_id"));
         transaction.setItemId(rs.getInt("item_id"));
         transaction.setItemName(rs.getString("item_name"));
-        transaction.setType(rs.getString("type"));
+        transaction.setType(rs.getString("transaction_type"));
         transaction.setQuantity(rs.getInt("quantity"));
-        transaction.setDate(rs.getTimestamp("date"));
+        transaction.setDate(rs.getTimestamp("transaction_date"));
         return transaction;
     }
     

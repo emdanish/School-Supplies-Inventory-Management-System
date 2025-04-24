@@ -15,13 +15,16 @@ public class SupplierDAO {
     
     // Create a new supplier
     public boolean addSupplier(Supplier supplier) {
-        String query = "INSERT INTO suppliers (supplier_name, contact_info) VALUES (?, ?)";
+        String query = "INSERT INTO suppliers (supplier_name, contact_person, phone, email, address) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             
             stmt.setString(1, supplier.getSupplierName());
-            stmt.setString(2, supplier.getContactInfo());
+            stmt.setString(2, supplier.getContactPerson());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getEmail());
+            stmt.setString(5, supplier.getAddress());
             
             int rowsAffected = stmt.executeUpdate();
             
@@ -42,14 +45,17 @@ public class SupplierDAO {
     
     // Update an existing supplier
     public boolean updateSupplier(Supplier supplier) {
-        String query = "UPDATE suppliers SET supplier_name = ?, contact_info = ? WHERE supplier_id = ?";
+        String query = "UPDATE suppliers SET supplier_name = ?, contact_person = ?, phone = ?, email = ?, address = ? WHERE supplier_id = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setString(1, supplier.getSupplierName());
-            stmt.setString(2, supplier.getContactInfo());
-            stmt.setInt(3, supplier.getSupplierId());
+            stmt.setString(2, supplier.getContactPerson());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getEmail());
+            stmt.setString(5, supplier.getAddress());
+            stmt.setInt(6, supplier.getSupplierId());
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -124,7 +130,10 @@ public class SupplierDAO {
         Supplier supplier = new Supplier();
         supplier.setSupplierId(rs.getInt("supplier_id"));
         supplier.setSupplierName(rs.getString("supplier_name"));
-        supplier.setContactInfo(rs.getString("contact_info"));
+        supplier.setContactPerson(rs.getString("contact_person"));
+        supplier.setPhone(rs.getString("phone"));
+        supplier.setEmail(rs.getString("email"));
+        supplier.setAddress(rs.getString("address"));
         return supplier;
     }
 } 

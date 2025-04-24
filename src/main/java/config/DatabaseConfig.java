@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public class DatabaseConfig {
     private static final String URL = "jdbc:mysql://localhost:3306/school_supplies_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "1234"; // Set your MySQL password here
+    private static final String USER = "school_supplies_user";
+    private static final String PASSWORD = "1234";
     
     static {
         try {

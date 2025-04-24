@@ -46,79 +46,45 @@ A comprehensive Java-based desktop application for managing school supplies inve
    - **Important**: During installation, you'll be asked to set a root password. Remember this password as you'll need it later!
    - After installation, MySQL should start automatically
 
-3. **Install MySQL Workbench** (for database management)
-   - Open your web browser and go to https://dev.mysql.com/downloads/workbench/
-   - Click on "Download" for macOS
-   - Once downloaded, open the installer package and follow the on-screen instructions
-
-4. **Install Maven**
-   - Open your web browser and go to https://maven.apache.org/download.cgi
-   - Download the Binary zip archive (apache-maven-x.x.x-bin.zip)
-   - Unzip the downloaded file to your Applications folder
-
 ### Step 2: Set Up the Database
 
-1. **Open MySQL Workbench**
-   - Open MySQL Workbench from your Applications folder
-   - Connect to your MySQL server by clicking on the connection that shows "localhost"
-   - You'll be prompted to enter the root password you created during MySQL installation
+1. **Using the setup script (Recommended)**
+   - Open Terminal (Applications → Utilities → Terminal)
+   - Navigate to the project folder with `cd /path/to/project`
+   - Run the setup script with: `mysql -u root -p < setup_database.sql`
+   - Enter your MySQL root password when prompted
+   - This will create the database, user, tables, and sample data
 
-2. **Create the database**
-   - In MySQL Workbench, click on the SQL icon to create a new query tab
-   - Type: `CREATE DATABASE school_supplies_db;`
-   - Click the lightning bolt icon to execute the query
+2. **Manual Setup (Alternative)**
+   - Install MySQL Workbench from https://dev.mysql.com/downloads/workbench/
+   - Open MySQL Workbench and connect to your local MySQL server
+   - Click the SQL icon to create a new query tab
+   - Copy the contents of `setup_database.sql` into the query tab
+   - Execute the query using the lightning bolt icon
 
-3. **Import the database structure**
-   - In MySQL Workbench, go to File → Open SQL Script
-   - Navigate to the project folder and open the file at `database/school_supplies_db.sql`
-   - Click the lightning bolt icon to execute the script
+### Step 3: Run the Application
 
-### Step 3: Configure and Run the Application
-
-1. **Update the database password**
-   - Open the project folder
-   - Navigate to `src/main/java/config`
-   - Open the file `DatabaseConfig.java` in a text editor
-   - Find the line with `private static final String PASSWORD = "1234";`
-   - Change "1234" to your MySQL root password (keep the quotes)
-   - Save the file
-
-2. **Create a run script for convenience** (optional)
-   - Open TextEdit
-   - Create a new file with the following content:
-     ```
-     #!/bin/bash
-     java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
-     ```
-   - Save the file as `run.command` in the main project folder
+1. **Build the Application**
    - Open Terminal
-   - Make the script executable by typing: `chmod +x run.command`
-   - Now you can double-click the run.command file to start the application
-
-3. **Run the application**
-   - If you downloaded the application as a JAR file:
-     - Double-click on the JAR file or right-click and select "Open With" → "Java Launcher"
-   - If you downloaded the source code:
-     - Double-click on the included `run.command` file (if available)
-     - Or follow the build instructions below
-
-### Building from Source Code (optional)
-
-If you need to build the application from source:
-
-1. **Open Terminal**
-   - Go to Applications → Utilities → Terminal
-
-2. **Navigate to the project folder**
-   - Type `cd ` (with a space after cd)
-   - Drag the project folder into the Terminal window and press Enter
-
-3. **Build with Maven**
-   - Type `./mvnw clean package` and press Enter
+   - Navigate to the project folder with `cd /path/to/project`
+   - Build using Maven Wrapper: `./mvnw clean package`
    - Wait for the build to complete
 
-4. **Run the application**
-   - Type `java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar` and press Enter
+2. **Run the Application**
+   - In the same Terminal window, run:
+   ```
+   java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
+   ```
+
+3. **Create a Launcher Script (Optional)**
+   - Create a file named `run.command` with the following content:
+   ```
+   #!/bin/bash
+   cd "$(dirname "$0")"
+   java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
+   ```
+   - Make it executable: `chmod +x run.command`
+   - Now you can launch the application by double-clicking `run.command`
 
 ## Running on Windows
 
@@ -137,72 +103,58 @@ If you need to build the application from source:
    - Follow the on-screen instructions
    - **Important**: During installation, you'll be asked to set a root password. Remember this password!
 
-3. **Install Maven** (optional - only needed if building from source)
-   - Open your web browser and go to https://maven.apache.org/download.cgi
-   - Download the Binary zip archive
-   - Extract the zip file to a folder like C:\Program Files\Maven
-
 ### Step 2: Set Up the Database
 
-1. **Open MySQL Workbench**
-   - Click Start → MySQL → MySQL Workbench
-   - Connect to your MySQL server by clicking on the connection that shows "localhost"
-   - Enter the root password you created during MySQL installation
+1. **Using the setup script (Recommended)**
+   - Open Command Prompt (Start → type "cmd" → press Enter)
+   - Navigate to the project folder with `cd \path\to\project`
+   - Run the setup script with: `mysql -u root -p < setup_database.sql`
+   - Enter your MySQL root password when prompted
+   - This will create the database, user, tables, and sample data
 
-2. **Create the database**
-   - In MySQL Workbench, click on the SQL icon to create a new query tab
-   - Type: `CREATE DATABASE school_supplies_db;`
-   - Click the lightning bolt icon to execute the query
+2. **Manual Setup (Alternative)**
+   - Open MySQL Workbench from the Start menu
+   - Connect to your local MySQL server
+   - Click the SQL icon to create a new query tab
+   - Copy the contents of `setup_database.sql` into the query tab
+   - Execute the query using the lightning bolt icon
 
-3. **Import the database structure**
-   - In MySQL Workbench, go to File → Open SQL Script
-   - Navigate to the project folder and open the file at `database/school_supplies_db.sql`
-   - Click the lightning bolt icon to execute the script
+### Step 3: Run the Application
 
-### Step 3: Configure and Run the Application
-
-1. **Update the database password**
-   - Open the project folder
-   - Navigate to `src/main/java/config`
-   - Open the file `DatabaseConfig.java` in a text editor (like Notepad)
-   - Find the line with `private static final String PASSWORD = "1234";`
-   - Change "1234" to your MySQL root password (keep the quotes)
-   - Save the file
-
-2. **Create a run script for convenience** (optional)
-   - Open Notepad
-   - Create a new file with the following content:
-     ```
-     java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
-     pause
-     ```
-   - Save the file as `run.bat` in the main project folder
-   - Now you can double-click the run.bat file to start the application
-
-3. **Run the application**
-   - If you downloaded the application as a JAR file:
-     - Double-click on the JAR file or right-click and select "Open With" → "Java(TM) Platform SE Binary"
-   - If you downloaded the source code:
-     - Double-click on the included `run.bat` file (if available)
-     - Or follow the build instructions below
-
-### Building from Source Code (optional)
-
-If you need to build the application from source:
-
-1. **Open Command Prompt**
-   - Click Start → type "cmd" → press Enter
-
-2. **Navigate to the project folder**
-   - Type `cd ` (with a space after cd)
-   - Drag the project folder into the Command Prompt window and press Enter
-
-3. **Build with Maven**
-   - Type `mvnw.cmd clean package` and press Enter
+1. **Build the Application**
+   - Open Command Prompt
+   - Navigate to the project folder with `cd \path\to\project`
+   - Build using Maven Wrapper: `mvnw.cmd clean package`
    - Wait for the build to complete
 
-4. **Run the application**
-   - Type `java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar` and press Enter
+2. **Run the Application**
+   - In the same Command Prompt window, run:
+   ```
+   java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
+   ```
+
+3. **Create a Launcher Script (Optional)**
+   - Create a file named `run.bat` with the following content:
+   ```
+   @echo off
+   java -jar target/inventory-management-1.0-SNAPSHOT-jar-with-dependencies.jar
+   pause
+   ```
+   - Now you can launch the application by double-clicking `run.bat`
+
+## How the Database Setup Works
+
+The `setup_database.sql` script does the following:
+1. Creates a database called `school_supplies_db`
+2. Creates a database user `school_supplies_user` with password `1234`
+3. Grants necessary permissions to this user
+4. Creates all required tables (categories, suppliers, items, transactions, users)
+5. Adds sample data including default users
+
+**Note**: If you need to customize the database connection, you can edit:
+```
+src/main/java/config/DatabaseConfig.java
+```
 
 ## Troubleshooting
 
@@ -214,10 +166,18 @@ If you need to build the application from source:
 ### Database connection error
 
 - Verify MySQL is running
-- Make sure the password in `DatabaseConfig.java` matches your MySQL root password
+- Make sure the MySQL user `school_supplies_user` exists with password `1234`
 - Ensure the database `school_supplies_db` exists
+- Check network connectivity if using a remote database
+
+### Login issues
+
+- The default users (admin/admin123 and staff1/staff123) should work out of the box
+- If you can't login, ensure the database setup was successful
+- Check the application logs for any SQL errors
 
 ### Other issues
 
-- Try restarting your computer
+- Try running the setup_database.sql script again to reset the database
+- Delete the target folder and rebuild the application
 - Make sure all installation steps were completed successfully

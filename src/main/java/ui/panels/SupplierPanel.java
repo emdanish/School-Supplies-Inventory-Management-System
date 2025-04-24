@@ -33,7 +33,10 @@ public class SupplierPanel extends JPanel {
     private JTable supplierTable;
     private DefaultTableModel tableModel;
     private JTextField nameField;
-    private JTextArea contactInfoArea;
+    private JTextField contactPersonField;
+    private JTextField phoneField;
+    private JTextField emailField;
+    private JTextArea addressArea;
     
     private JButton addButton;
     private JButton updateButton;
@@ -69,7 +72,9 @@ public class SupplierPanel extends JPanel {
         // Define table columns
         tableModel.addColumn("ID");
         tableModel.addColumn("Supplier Name");
-        tableModel.addColumn("Contact Info");
+        tableModel.addColumn("Contact Person");
+        tableModel.addColumn("Phone");
+        tableModel.addColumn("Email");
         tableModel.addColumn("Items Count");
         
         // Create JTable with the model
@@ -110,22 +115,64 @@ public class SupplierPanel extends JPanel {
         nameField = new JTextField(20);
         formPanel.add(nameField, gbc);
         
-        // Contact Info area
+        // Contact Person field
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        formPanel.add(new JLabel("Contact Info:"), gbc);
+        formPanel.add(new JLabel("Contact Person:"), gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        contactInfoArea = new JTextArea(4, 20);
-        contactInfoArea.setLineWrap(true);
-        contactInfoArea.setWrapStyleWord(true);
-        JScrollPane contactScrollPane = new JScrollPane(contactInfoArea);
-        formPanel.add(contactScrollPane, gbc);
+        contactPersonField = new JTextField(20);
+        formPanel.add(contactPersonField, gbc);
+        
+        // Phone field
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        formPanel.add(new JLabel("Phone:"), gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        phoneField = new JTextField(20);
+        formPanel.add(phoneField, gbc);
+        
+        // Email field
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        formPanel.add(new JLabel("Email:"), gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        emailField = new JTextField(20);
+        formPanel.add(emailField, gbc);
+        
+        // Address area
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        formPanel.add(new JLabel("Address:"), gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        addressArea = new JTextArea(3, 20);
+        addressArea.setLineWrap(true);
+        addressArea.setWrapStyleWord(true);
+        JScrollPane addressScrollPane = new JScrollPane(addressArea);
+        formPanel.add(addressScrollPane, gbc);
         
         // Create buttons panel
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -196,7 +243,9 @@ public class SupplierPanel extends JPanel {
             tableModel.addRow(new Object[] {
                     supplier.getSupplierId(),
                     supplier.getSupplierName(),
-                    supplier.getContactInfo(),
+                    supplier.getContactPerson(),
+                    supplier.getPhone(),
+                    supplier.getEmail(),
                     items.size()
             });
         }
@@ -212,7 +261,10 @@ public class SupplierPanel extends JPanel {
         // Populate form fields
         if (selectedSupplier != null) {
             nameField.setText(selectedSupplier.getSupplierName());
-            contactInfoArea.setText(selectedSupplier.getContactInfo());
+            contactPersonField.setText(selectedSupplier.getContactPerson());
+            phoneField.setText(selectedSupplier.getPhone());
+            emailField.setText(selectedSupplier.getEmail());
+            addressArea.setText(selectedSupplier.getAddress());
             
             // Enable update and delete buttons
             updateButton.setEnabled(true);
@@ -222,7 +274,10 @@ public class SupplierPanel extends JPanel {
     
     private void clearForm() {
         nameField.setText("");
-        contactInfoArea.setText("");
+        contactPersonField.setText("");
+        phoneField.setText("");
+        emailField.setText("");
+        addressArea.setText("");
         
         selectedSupplier = null;
         supplierTable.clearSelection();
@@ -240,10 +295,13 @@ public class SupplierPanel extends JPanel {
         
         // Get values from form fields
         String name = nameField.getText();
-        String contactInfo = contactInfoArea.getText();
+        String contactPerson = contactPersonField.getText();
+        String phone = phoneField.getText();
+        String email = emailField.getText();
+        String address = addressArea.getText();
         
         // Create new Supplier object
-        Supplier supplier = new Supplier(name, contactInfo);
+        Supplier supplier = new Supplier(name, contactPerson, phone, email, address);
         
         // Add supplier to database
         if (supplierDAO.addSupplier(supplier)) {
@@ -273,11 +331,17 @@ public class SupplierPanel extends JPanel {
         
         // Get values from form fields
         String name = nameField.getText();
-        String contactInfo = contactInfoArea.getText();
+        String contactPerson = contactPersonField.getText();
+        String phone = phoneField.getText();
+        String email = emailField.getText();
+        String address = addressArea.getText();
         
         // Update the Supplier object
         selectedSupplier.setSupplierName(name);
-        selectedSupplier.setContactInfo(contactInfo);
+        selectedSupplier.setContactPerson(contactPerson);
+        selectedSupplier.setPhone(phone);
+        selectedSupplier.setEmail(email);
+        selectedSupplier.setAddress(address);
         
         // Update supplier in database
         if (supplierDAO.updateSupplier(selectedSupplier)) {
@@ -300,22 +364,21 @@ public class SupplierPanel extends JPanel {
             return;
         }
         
-        // Check if there are items from this supplier
+        // Check if supplier has associated items
         List<model.Item> items = itemDAO.getItemsBySupplier(selectedSupplier.getSupplierId());
         if (!items.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                    "Cannot delete this supplier because it is associated with " + items.size() + " item(s).\n" +
-                    "Please reassign or delete these items first.", 
+            JOptionPane.showMessageDialog(this,
+                    "Cannot delete supplier with associated items. Please reassign or delete the items first.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         // Confirm deletion
-        int choice = JOptionPane.showConfirmDialog(this, 
-                "Are you sure you want to delete this supplier?\nThis action cannot be undone.", 
-                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete this supplier?",
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         
-        if (choice == JOptionPane.YES_OPTION) {
+        if (confirm == JOptionPane.YES_OPTION) {
             // Delete supplier from database
             if (supplierDAO.deleteSupplier(selectedSupplier.getSupplierId())) {
                 JOptionPane.showMessageDialog(this, "Supplier deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -339,10 +402,10 @@ public class SupplierPanel extends JPanel {
             return false;
         }
         
-        // Validate contact info
-        if (contactInfoArea.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter contact information", "Validation Error", JOptionPane.ERROR_MESSAGE);
-            contactInfoArea.requestFocus();
+        // Validate contact person
+        if (contactPersonField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter contact person", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            contactPersonField.requestFocus();
             return false;
         }
         

@@ -15,7 +15,7 @@ public class ItemDAO {
     
     // Create a new item
     public boolean addItem(Item item) {
-        String query = "INSERT INTO items (item_name, category_id, quantity, supplier_id, unit_price, reorder_level) " +
+        String query = "INSERT INTO items (item_name, category_id, quantity, supplier_id, unit_price, minimum_quantity) " +
                       "VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
@@ -48,7 +48,7 @@ public class ItemDAO {
     // Update an existing item
     public boolean updateItem(Item item) {
         String query = "UPDATE items SET item_name = ?, category_id = ?, quantity = ?, " +
-                      "supplier_id = ?, unit_price = ?, reorder_level = ? WHERE item_id = ?";
+                      "supplier_id = ?, unit_price = ?, minimum_quantity = ? WHERE item_id = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -91,19 +91,51 @@ public class ItemDAO {
     
     // Delete an item
     public boolean deleteItem(int itemId) {
-        String query = "DELETE FROM items WHERE item_id = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        Connection conn = null;
+        try {
+            // Get a connection and disable auto-commit for transaction
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
             
-            stmt.setInt(1, itemId);
+            // First, delete any related transactions
+            String deleteTransactionsQuery = "DELETE FROM transactions WHERE item_id = ?";
+            try (PreparedStatement deleteTransactionsStmt = conn.prepareStatement(deleteTransactionsQuery)) {
+                deleteTransactionsStmt.setInt(1, itemId);
+                deleteTransactionsStmt.executeUpdate();
+            }
             
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            // Now delete the item
+            String deleteItemQuery = "DELETE FROM items WHERE item_id = ?";
+            try (PreparedStatement deleteItemStmt = conn.prepareStatement(deleteItemQuery)) {
+                deleteItemStmt.setInt(1, itemId);
+                int rowsAffected = deleteItemStmt.executeUpdate();
+                
+                // Commit transaction
+                conn.commit();
+                return rowsAffected > 0;
+            }
             
         } catch (SQLException e) {
+            // Rollback transaction on error
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            // Reset auto-commit and close connection
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    closeEx.printStackTrace();
+                }
+            }
         }
     }
     
@@ -217,7 +249,7 @@ public class ItemDAO {
     // Get low stock items
     public List<Item> getLowStockItems() {
         List<Item> items = new ArrayList<>();
-        String query = "SELECT * FROM items WHERE quantity <= reorder_level AND quantity > 0";
+        String query = "SELECT * FROM items WHERE quantity <= minimum_quantity AND quantity > 0";
         
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
@@ -263,7 +295,7 @@ public class ItemDAO {
         item.setQuantity(rs.getInt("quantity"));
         item.setSupplierId(rs.getInt("supplier_id"));
         item.setUnitPrice(rs.getDouble("unit_price"));
-        item.setReorderLevel(rs.getInt("reorder_level"));
+        item.setReorderLevel(rs.getInt("minimum_quantity"));
         return item;
     }
 } 
